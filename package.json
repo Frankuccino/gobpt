@@ -1,0 +1,29 @@
+{
+  "name": "gobpt",
+  "version": "1.0.0",
+  "description": "golang boilerplate template",
+  "main": "index.js",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "format:check": "turbo run format:check",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rimraf node_modules"
+  },
+  "keywords": [],
+  "author": "frankuccino",
+  "license": "ISC",
+  "packageManager": "bun@1.2.13",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspace": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "turbo": "^2.10.3",
+    "typescript": "^6.0.3"
+  }
+}

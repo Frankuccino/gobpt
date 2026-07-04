@@ -1,0 +1,93 @@
+version: '3'
+
+vars:
+  BOILERPLATE_DB_DSN: '{{.BOILERPLATE_DB_DSN | default ""}}'
+
+tasks:
+  help:
+    desc: print this help message
+    cmds:
+    - task --list-all
+    silent: true
+
+  confirm:
+    desc: confirmation prompt
+    cmds:
+    - |
+      echo -n 'Are you sure? [y/N] ' && read ans && [ ${ans:-N} = y ]
+    silent: true
+    internal: true
+
+  run:
+    desc: run the cmd/gobpt application
+    cmds:
+    - go run ./cmd/gobpt
+
+  migrations:new:
+    desc: create a new database migration
+    vars:
+      NAME: '{{.name | default ""}}'
+    cmds:
+    - |
+      if [ -z "{{.NAME}}" ]; then
+        echo "Error: name parameter is required"
+        echo "Usage: task migrations:new name=migration_name"
+        exit 1
+      fi
+    - echo 'Creating migration file for {{.NAME}}...'
+    - tern new -m ./internal/database/migrations {{.NAME}}
+
+  migrations:up:
+    desc: apply all up database migrations
+    deps: [ confirm ]
+    cmds:
+    - echo 'Running up migrations...'
+    - tern migrate -m ./internal/database/migrations --conn-string {{.BOILERPLATE_DB_DSN}}
+
+  tidy:
+    desc: format all .go files, and tidy and vendor module dependencies
+    cmds:
+    - echo 'Formatting .go files...'
+    - go fmt ./...
+    - echo 'Tidying module dependencies...'
+    - go mod tidy
+    - echo 'Verifying dependencies...'
+    - go mod verify
+
+################################################################################
+# COMMAND REFERENCE & FUNCTIONALITY DOCUMENTATION
+#
+# 1. task help
+#    - Purpose: Displays all available tasks in this Taskfile.
+#    - Action: Runs 'task --list-all' to print task descriptions.
+#    - Behavior: Marked as 'silent' to hide the raw command printout.
+#
+# 2. task confirm
+#    - Purpose: Blocks execution to request user confirmation before critical actions.
+#    - Action: Spawns an interactive shell prompt [y/N]. Aborts execution if 'y' is not input.
+#    - Behavior: Marked 'internal: true' so it does not appear in the standard help menu.
+#
+# 3. task run
+#    - Purpose: Starts the core Go application locally.
+#    - Action: Executes 'go run' targeting the package inside './cmd/gobpt'.
+#
+# 4. task migrations:new
+#    - Purpose: Generates structural templates for a new database database migration.
+#    - Input Required: Must pass a name argument (e.g., 'task migrations:new name=add_users').
+#    - Action: Validates that the name variable is present, then invokes 'tern new' 
+#              to output raw files into './internal/database/migrations'.
+#
+# 5. task migrations:up
+#    - Purpose: Applies structural updates forward to your live database.
+#    - Dependency: Triggers 'task confirm' first to force user authorization.
+#    - Action: Uses 'tern migrate' pointing to the database string injected via 
+#              the BOILERPLATE_DB_DSN environment or fallback variable.
+#
+# 6. task tidy
+#    - Purpose: Normalizes Go codebase styling and updates project dependencies.
+#    - Action: Bundles three distinct commands consecutively:
+#              a) 'go fmt' fixes style across all local directories.
+#              b) 'go mod tidy' adds missing module definitions and prunes unused ones.
+#              c) 'go mod verify' checks the integrity of downloaded modules against hashes.
+#
+################################################################################     

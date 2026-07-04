@@ -1,0 +1,42 @@
+
+# Clean binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Specific architectures / builds
+bin/
+out/
+
+# Test binaries, built with `go test -c`
+*.test
+
+# Code coverage profiles and test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Dependency directories
+# Uncomment this if you keep a local copy of dependencies inside your repo
+# vendor/
+
+# Environment configuration variables 
+.env
+.env.local
+.env.*.local
+
+# Common IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
