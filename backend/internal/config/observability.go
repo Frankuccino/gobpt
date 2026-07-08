@@ -21,7 +21,7 @@ type LoggingConfig struct {
 
 type NewRelicConfig struct {
 	LicenseKey                string `koanf:"license_key" validate:"required"`
-	AppLogForwardEnabled      bool   `koanf:"app_log_forward_enabled"`
+	AppLogForwardingEnabled   bool   `koanf:"app_log_forward_enabled"`
 	DistributedTracingEnabled bool   `koanf:"distributed_tracing_enabled"`
 	DebugLogging              bool   `koanf:"debug_logging"`
 }
@@ -44,7 +44,7 @@ func DefaultObservabilityConfig() *ObservabilityConfig {
 		},
 		NewRelic: NewRelicConfig{
 			LicenseKey:                "",
-			AppLogForwardEnabled:      true,
+			AppLogForwardingEnabled:   true,
 			DistributedTracingEnabled: true,
 			DebugLogging:              false,
 		},
