@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/Frankuccino/gobpt/internal/config"
 	pgxzero "github.com/jackc/pgx-zerolog"
@@ -70,6 +71,7 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerConfig
 		return nil, fmt.Errorf("failed to parse pgx pool config %w", err)
 	}
 
+	// Add New Relic PostgreSQL instrumentation
 	if loggerService != nil && loggerService.GetApplication() != nil {
 		pgxPoolConfig.ConnConfig.Tracer = nrpgx5.NewTracer()
 	}
@@ -106,7 +108,22 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *loggerConfig
 		log:  logger,
 	}
 
+	// Check whether we're able to connect to our database or not.
+	ctx, cancel := context.WithTimeout(context.Background(), DatabasePingTimeout*time.Second)
+	defer cancel()
+	if err = pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	logger.Info().Msg("connected to the database")
+
 	return database, nil
+}
+
+func (db *Database) Close() error {
+	db.log.Info().Msg("closing database connection pool")
+	db.Pool.Close()
+	return nil
 }
 
 // note for self, as you can see from the above struct 'mtTracers', the defined field of 'tracers'
