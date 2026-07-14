@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -75,6 +76,46 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *logger.Logge
 	return server, nil
 }
 
+// Takes an http handler and initializes a new instance of an http server
+func (s *Server) SetupHTTPServer(handler http.Handler) {
+	s.httpServer = &http.Server{
+		Addr:         ":" + s.Config.Server.Port,
+		Handler:      handler,
+		ReadTimeout:  time.Duration(s.Config.Server.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(s.Config.Server.WriteTimeout) * time.Second,
+		IdleTimeout:  time.Duration(s.Config.Server.IdleTimeout) * time.Second,
+	}
+}
+
+func (s *Server) Start() error {
+	if s.httpServer == nil {
+		return errors.New("HTTP server not initialized")
+	}
+
+	s.Logger.Info().
+		Str("port", s.Config.Server.Port).
+		Str("env", s.Config.Primary.Env).
+		Msg("starting server")
+
+	return s.httpServer.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	if err := s.httpServer.Shutdown(ctx); err != nil {
+		return fmt.Errorf("failed to shutdown HTTP server: %w", err)
+	}
+
+	if err := s.DB.Close(); err != nil {
+		return fmt.Errorf("failed to close database connection: %w", err)
+	}
+
+	if s.Job != nil {
+		s.Job.Stop()
+	}
+
+	return nil
+}
+
 // this will contain the core data structure which will contain the:
 // config,
 // logger,
@@ -90,3 +131,7 @@ func New(cfg *config.Config, logger *zerolog.Logger, loggerService *logger.Logge
 
 // We'll then implement a function which would initialize all these different services, servers, and
 // it is going to put all of them, the initialized versions inside this struct.
+
+// Now we'll need a way to Start and Shutdown that service
+
+// Then, let's go ahead and implement the middlewares
