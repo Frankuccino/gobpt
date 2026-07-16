@@ -37,6 +37,7 @@ require (
 	github.com/jackc/tern/v2 v2.4.1 // indirect
 	github.com/knadh/koanf/maps v0.1.2 // indirect
 	github.com/labstack/echo v3.3.10+incompatible // indirect
+	github.com/labstack/echo/v4 v4.9.0 // indirect
 	github.com/labstack/gommon v0.5.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
@@ -44,6 +45,8 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.0 // indirect
+	github.com/newrelic/go-agent/v3/integrations/nrecho-v4 v1.1.5 // indirect
+	github.com/newrelic/go-agent/v3/integrations/nrpkgerrors v1.1.0 // indirect
 	github.com/newrelic/go-agent/v3/integrations/nrredis-v9 v1.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/redis/go-redis/v9 v9.14.1 // indirect
