@@ -7,7 +7,7 @@ import (
 
 	"github.com/Frankuccino/gobpt/internal/errs"
 	"github.com/Frankuccino/gobpt/internal/server"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 
 	"github.com/clerk/clerk-sdk-go/v2"
 	clerkhttp "github.com/clerk/clerk-sdk-go/v2/http"
