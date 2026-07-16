@@ -5,7 +5,7 @@ import (
 
 	"github.com/Frankuccino/gobpt/internal/logger"
 	"github.com/Frankuccino/gobpt/internal/server"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog"
 )
