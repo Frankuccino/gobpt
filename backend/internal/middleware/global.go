@@ -12,22 +12,30 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// GlobalMiddlewares bundles application-wide HTTP middleware configurations.
 type GlobalMiddlewares struct {
 	server *server.Server
 }
 
+// NewGlobalMiddlewares initializes and returns a new instanec of GlobalMiddlewares.
 func NewGlobalMiddlewares(s *server.Server) *GlobalMiddlewares {
 	return &GlobalMiddlewares{
 		server: s,
 	}
 }
 
+// CORS returns an Echo middleware that configures Cross-Origin Resource Sharing
+// based on the server's configuration allowed origins.
 func (global *GlobalMiddlewares) CORS() echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: global.server.Config.Server.CORSAllowedOrigins,
 	})
 }
 
+// RequestLogger is a middleware that tries to log every single request to our app
+// by returning an Echo middleware that handles structured, contextual logging
+// for HTTP requests, adjusting log levels based on response status codes and resolving
+// underlying error codes.
 func (global *GlobalMiddlewares) RequestLogger() echo.MiddlewareFunc {
 	return middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:     true,
@@ -92,14 +100,20 @@ func (global *GlobalMiddlewares) RequestLogger() echo.MiddlewareFunc {
 	})
 }
 
+// Recover returns an Echo middleware that recovers from panics anywhere in the chain,
+// logs the panic, and handles it gracefully.
 func (global *GlobalMiddlewares) Recover() echo.MiddlewareFunc {
 	return middleware.Recover()
 }
 
+// Secure return an Echo middleware that sets variious HTTP headers for basic security protections.
 func (global *GlobalMiddlewares) Secure() echo.MiddlewareFunc {
 	return middleware.Secure()
 }
 
+// GlobalErrorHandler is a centralized custom error handler for Echo that intercepts runtime errors,
+// translates low-level database constraints via the sqlerr package into standardized HTTP errors,
+// logs failures with full stack traces, and responds with a uniform JSON error payload.
 func (global *GlobalMiddlewares) GlobalErrorHandler(err error, c echo.Context) {
 	// First try to handle database errors and convert them to appropriate HTTP errors
 	originalErr := err
